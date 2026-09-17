@@ -1067,18 +1067,34 @@ static void read_surface_normal_hints(struct wlr_xwm *xwm,
 		xsurface->size_hints->base_width = -1;
 		xsurface->size_hints->base_height = -1;
 	} else if (!has_base_size_hints) {
-		xsurface->size_hints->base_width = xsurface->size_hints->min_width;
-		xsurface->size_hints->base_height = xsurface->size_hints->min_height;
-	} else if (!has_min_size_hints) {
+		xsurface->size_hints->base_width = unscale(xwm, xsurface->size_hints->min_width);
+		xsurface->size_hints->base_height = unscale(xwm, xsurface->size_hints->min_height); 
 		xsurface->size_hints->min_width = xsurface->size_hints->base_width;
 		xsurface->size_hints->min_height = xsurface->size_hints->base_height;
+	} else if (!has_min_size_hints) {
+		xsurface->size_hints->min_width = unscale(xwm, xsurface->size_hints->base_width);
+		xsurface->size_hints->min_height = unscale(xwm, xsurface->size_hints->base_height);
+		xsurface->size_hints->base_width = xsurface->size_hints->min_width;
+		xsurface->size_hints->base_height = xsurface->size_hints->min_height;
+	} else {
+		xsurface->size_hints->min_width = unscale(xwm, xsurface->size_hints->min_width);
+		xsurface->size_hints->min_height = unscale(xwm, xsurface->size_hints->min_height);
+		xsurface->size_hints->base_width = unscale(xwm, xsurface->size_hints->base_width);
+		xsurface->size_hints->base_height = unscale(xwm, xsurface->size_hints->base_height); 
 	}
 
 	if ((flags & XCB_ICCCM_SIZE_HINT_P_MAX_SIZE) == 0) {
 		xsurface->size_hints->max_width = -1;
 		xsurface->size_hints->max_height = -1;
+	} else {
+		xsurface->size_hints->max_width = unscale(xwm, xsurface->size_hints->max_width);
+		xsurface->size_hints->max_height = unscale(xwm, xsurface->size_hints->max_height);
 	}
 
+	xsurface->size_hints->x = unscale(xwm, xsurface->size_hints->x);
+	xsurface->size_hints->y = unscale(xwm, xsurface->size_hints->y);
+	xsurface->size_hints->width = unscale(xwm, xsurface->size_hints->width);
+	xsurface->size_hints->height = unscale(xwm, xsurface->size_hints->height);
 	wl_signal_emit_mutable(&xsurface->events.set_size_hints, NULL);
 }
 
