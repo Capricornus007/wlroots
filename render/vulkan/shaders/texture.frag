@@ -6,8 +6,8 @@ layout(location = 0) in vec2 uv;
 layout(location = 0) out vec4 out_color;
 
 // struct wlr_vk_frag_texture_pcr_data
-layout(push_constant, row_major) uniform UBO {
-	layout(offset = 48) mat4 matrix;
+layout(push_constant) uniform UBO {
+	layout(offset = 48) float matrix_packed[9];
 	float alpha;
 	float luminance_multiplier;
 	// Per-surface ICtCp tone mapping, luminances in cd/m². Tone mapping is
@@ -155,7 +155,12 @@ void main() {
 
 	rgb *= data.luminance_multiplier;
 
-	rgb = mat3(data.matrix) * rgb;
+	// Rebuild the row-major packed 3x3 (GLSL constructors take columns).
+	mat3 color_matrix = mat3(
+		data.matrix_packed[0], data.matrix_packed[3], data.matrix_packed[6],
+		data.matrix_packed[1], data.matrix_packed[4], data.matrix_packed[7],
+		data.matrix_packed[2], data.matrix_packed[5], data.matrix_packed[8]);
+	rgb = color_matrix * rgb;
 
 	// Tone map the source content into the display's capability. Disabled
 	// (tm_content_max <= 0) for bypass content (e.g. windows_scrgb) and when

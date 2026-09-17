@@ -372,7 +372,9 @@ struct wlr_vk_vert_pcr_data {
 };
 
 struct wlr_vk_frag_texture_pcr_data {
-	float matrix[4][4]; // only a 3x3 subset is used
+	// Packed row-major 3x3 (9 floats). A full mat4 would push the total
+	// vertex+fragment push-constant block over the 128-byte minimum.
+	float matrix[9];
 	float alpha;
 	float luminance_multiplier;
 	// Per-surface ICtCp tone mapping, luminances in cd/m². Tone mapping is

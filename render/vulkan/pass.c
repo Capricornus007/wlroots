@@ -918,7 +918,7 @@ static void render_pass_add_texture(struct wlr_render_pass *wlr_pass,
 		frag_pcr_data.tm_display_min = options->tone_mapping->display_min;
 		frag_pcr_data.tm_display_max = options->tone_mapping->display_max;
 	}
-	encode_color_matrix(color_matrix, frag_pcr_data.matrix);
+	memcpy(frag_pcr_data.matrix, color_matrix, sizeof(frag_pcr_data.matrix));
 
 	bind_pipeline(pass, pipe->vk);
 
